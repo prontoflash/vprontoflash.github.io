@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Resumen por WhatsApp - PRONTOFLASH</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    h2 {
+      color: #25d366;
+    }
+    input {
+      padding: 10px;
+      margin: 10px auto;
+      width: 280px;
+      display: block;
+    }
+    button {
+      background-color: #25d366;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #1da851;
+    }
+    pre {
+      background: #222;
+      color: #ccc;
+      padding: 20px;
+      text-align: left;
+      white-space: pre-wrap;
+      max-width: 700px;
+      margin: 20px auto;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📤 Enviar Resumen por WhatsApp</h2>
+
+  <input type="text" id="cliente" placeholder="Nombre del cliente" />
+  <input type="text" id="numero" placeholder="Número WhatsApp (sin + ni espacios)" />
+  <button onclick="enviar()">Enviar Resumen</button>
+
+  <pre id="resumenTexto"></pre>
+
+  <script>
+    function enviar() {
+      const nombre = document.getElementById("cliente").value.trim();
+      const numero = document.getElementById("numero").value.trim();
+      const servicios = JSON.parse(localStorage.getItem("agendamientos")) || [];
+
+      if (!nombre || !numero) return alert("⚠️ Ingresa nombre y número.");
+
+      const filtrados = servicios.filter(s => s.cliente.toLowerCase() === nombre.toLowerCase());
+
+      if (filtrados.length === 0) {
+        document.getElementById("resumenTexto").textContent = "No se encontraron servicios para ese cliente.";
+        return;
+      }
+
+      let mensaje = \`Hola \${nombre}, este es el resumen de tus servicios con PRONTOFLASH:\n\n\`;
+      filtrados.forEach(s => {
+        mensaje += \`- \${s.servicio} el \${s.fecha} a las \${s.hora}\n\`;
+        if (s.precio) mensaje += \`  Precio: \$\${s.precio}\n\`;
+        mensaje += "\n";
+      });
+
+      document.getElementById("resumenTexto").textContent = mensaje;
+
+      const url = "https://wa.me/" + numero + "?text=" + encodeURIComponent(mensaje);
+      window.open(url, "_blank");
+    }
+  </script>
+
+</body>
+</html>

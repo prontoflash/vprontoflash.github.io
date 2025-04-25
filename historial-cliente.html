@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Historial de Cliente - PRONTOFLASH</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    h2 {
+      color: #ff3300;
+    }
+    input {
+      padding: 10px;
+      margin: 15px auto;
+      width: 300px;
+      border-radius: 6px;
+      border: none;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #444;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📋 Historial del Cliente</h2>
+  <input type="text" id="buscar" placeholder="Escribe el nombre del cliente" oninput="buscarHistorial()" />
+
+  <table>
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Servicio</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Estado Técnico</th>
+        <th>Precio</th>
+      </tr>
+    </thead>
+    <tbody id="tablaHistorial"></tbody>
+  </table>
+
+  <script>
+    function buscarHistorial() {
+      const nombre = document.getElementById("buscar").value.toLowerCase();
+      const data = JSON.parse(localStorage.getItem("agendamientos")) || [];
+      const tbody = document.getElementById("tablaHistorial");
+      tbody.innerHTML = "";
+
+      const resultados = data.filter(a => a.cliente.toLowerCase().includes(nombre));
+
+      if (resultados.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='6'>No se encontraron registros para este cliente.</td></tr>";
+        return;
+      }
+
+      resultados.forEach(servicio => {
+        const fila = \`
+          <tr>
+            <td>\${servicio.cliente}</td>
+            <td>\${servicio.servicio}</td>
+            <td>\${servicio.fecha}</td>
+            <td>\${servicio.hora}</td>
+            <td>\${servicio.estadoTecnico}</td>
+            <td>\$ \${servicio.precio || "-"}</td>
+          </tr>
+        \`;
+        tbody.innerHTML += fila;
+      });
+    }
+
+    window.onload = buscarHistorial;
+  </script>
+
+</body>
+</html>

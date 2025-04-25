@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Resumen de Facturación - PRONTOFLASH</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    input, select {
+      padding: 8px;
+      margin: 5px;
+      font-size: 14px;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 8px;
+    }
+    .boton {
+      background-color: #ff3300;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    .boton:hover {
+      background-color: #cc2900;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📋 Resumen de Facturación</h2>
+
+  <div>
+    <input type="text" id="filtroCliente" placeholder="Buscar cliente" oninput="mostrarFacturas()" />
+    <select id="filtroEstado" onchange="mostrarFacturas()">
+      <option value="">Todos los estados</option>
+      <option value="Pagado">Pagado</option>
+      <option value="Pendiente">Pendiente</option>
+    </select>
+    <button class="boton" onclick="exportarPDF()">📤 Exportar PDF</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Servicio</th>
+        <th>Precio</th>
+        <th>Duración</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tablaFacturas"></tbody>
+  </table>
+
+  <script>
+    function obtenerAgendamientos() {
+      return JSON.parse(localStorage.getItem("agendamientos")) || [];
+    }
+
+    function guardarAgendamientos(data) {
+      localStorage.setItem("agendamientos", JSON.stringify(data));
+    }
+
+    function mostrarFacturas() {
+      const filtroCliente = document.getElementById("filtroCliente").value.toLowerCase();
+      const filtroEstado = document.getElementById("filtroEstado").value;
+      const tbody = document.getElementById("tablaFacturas");
+      const agendamientos = obtenerAgendamientos();
+
+      tbody.innerHTML = "";
+
+      agendamientos.forEach((item, i) => {
+        if (
+          item.estadoTecnico === "Finalizado" &&
+          item.precio &&
+          item.cliente.toLowerCase().includes(filtroCliente) &&
+          (filtroEstado === "" || item.estadoPago === filtroEstado)
+        ) {
+          const fila = \`
+            <tr>
+              <td>\${item.cliente}</td>
+              <td>\${item.servicio}</td>
+              <td>\$ \${item.precio}</td>
+              <td>\${item.duracion || "-"}</td>
+              <td>\${item.fecha}</td>
+              <td>
+                <button onclick="cambiarEstado(\${i})" class="boton" style="background-color:\${item.estadoPago === 'Pagado' ? 'green' : '#cc2900'}">
+                  \${item.estadoPago || 'Pendiente'}
+                </button>
+              </td>
+              <td>
+                <button onclick="verFactura(\${i})" class="boton">🧾</button>
+                <button onclick="eliminarFactura(\${i})" class="boton">🗑️</button>
+              </td>
+            </tr>
+          \`;
+          tbody.innerHTML += fila;
+        }
+      });
+
+      if (tbody.innerHTML === "") {
+        tbody.innerHTML = "<tr><td colspan='7'>No hay facturas disponibles.</td></tr>";
+      }
+    }
+
+    function cambiarEstado(index) {
+      const agendamientos = obtenerAgendamientos();
+      agendamientos[index].estadoPago = agendamientos[index].estadoPago === "Pagado" ? "Pendiente" : "Pagado";
+      guardarAgendamientos(agendamientos);
+      mostrarFacturas();
+    }
+
+    function eliminarFactura(index) {
+      const agendamientos = obtenerAgendamientos();
+      agendamientos.splice(index, 1);
+      guardarAgendamientos(agendamientos);
+      mostrarFacturas();
+    }
+
+    function verFactura(index) {
+      window.open('factura.html?id=' + index, '_blank');
+    }
+
+    function exportarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text("Resumen de Facturación - PRONTOFLASH", 10, 10);
+      let y = 20;
+
+      const agendamientos = obtenerAgendamientos();
+      agendamientos.forEach((item) => {
+        if (item.estadoTecnico === "Finalizado" && item.precio) {
+          doc.text(\`Cliente: \${item.cliente}, Servicio: \${item.servicio}, \$\${item.precio}, Estado: \${item.estadoPago || 'Pendiente'}\`, 10, y);
+          y += 10;
+        }
+      });
+
+      doc.save("facturacion_prontoflash.pdf");
+    }
+
+    window.onload = mostrarFacturas;
+  </script>
+
+</body>
+</html>

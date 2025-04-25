@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Servicios - PRONTOFLASH</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      text-align: center;
+    }
+    h2 {
+      color: #ff3300;
+    }
+    input {
+      padding: 10px;
+      margin: 5px;
+      width: 250px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #ff3300;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #cc2900;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+    li {
+      background-color: #222;
+      margin: 5px auto;
+      padding: 10px;
+      width: 300px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .precio {
+      font-size: 14px;
+      color: #bbb;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🛠 Gestión de Servicios</h2>
+
+  <input type="text" id="nombreServicio" placeholder="Nombre del servicio" />
+  <input type="number" id="precioServicio" placeholder="Precio" />
+  <button onclick="agregarServicio()">➕ Agregar</button>
+
+  <ul id="listaServicios"></ul>
+
+  <script>
+    function obtenerServicios() {
+      return JSON.parse(localStorage.getItem("servicios")) || [];
+    }
+
+    function guardarServicios(servicios) {
+      localStorage.setItem("servicios", JSON.stringify(servicios));
+    }
+
+    function agregarServicio() {
+      const nombre = document.getElementById("nombreServicio").value.trim();
+      const precio = parseFloat(document.getElementById("precioServicio").value);
+      if (!nombre || isNaN(precio)) return alert("⚠️ Rellena todos los campos correctamente.");
+
+      const servicios = obtenerServicios();
+      servicios.push({ nombre, precio });
+      guardarServicios(servicios);
+      document.getElementById("nombreServicio").value = "";
+      document.getElementById("precioServicio").value = "";
+      mostrarServicios();
+    }
+
+    function eliminarServicio(index) {
+      const servicios = obtenerServicios();
+      servicios.splice(index, 1);
+      guardarServicios(servicios);
+      mostrarServicios();
+    }
+
+    function mostrarServicios() {
+      const lista = document.getElementById("listaServicios");
+      const servicios = obtenerServicios();
+      lista.innerHTML = "";
+
+      if (servicios.length === 0) {
+        lista.innerHTML = "<li>No hay servicios registrados.</li>";
+        return;
+      }
+
+      servicios.forEach((serv, i) => {
+        const li = document.createElement("li");
+        li.innerHTML = \`
+          <span>\${serv.nombre} <span class="precio">(\$ \${serv.precio.toFixed(2)})</span></span>
+          <button onclick="eliminarServicio(\${i})">🗑️</button>
+        \`;
+        lista.appendChild(li);
+      });
+    }
+
+    window.onload = mostrarServicios;
+  </script>
+
+</body>
+</html>

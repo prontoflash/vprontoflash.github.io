@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Firmas Guardadas - PRONTOFLASH</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    h2 {
+      color: #ff3300;
+    }
+    .firma {
+      background: white;
+      border: 2px solid #ff3300;
+      margin: 10px auto;
+      padding: 10px;
+      width: fit-content;
+      text-align: center;
+    }
+    img {
+      max-width: 300px;
+      margin-top: 10px;
+    }
+    input {
+      padding: 10px;
+      width: 250px;
+      margin: 20px auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🖊 Firmas Guardadas</h2>
+  <input type="text" id="filtro" placeholder="Buscar por nombre..." oninput="mostrarFirmas()" />
+
+  <div id="contenedorFirmas"></div>
+
+  <script>
+    function mostrarFirmas() {
+      const contenedor = document.getElementById("contenedorFirmas");
+      const filtro = document.getElementById("filtro").value.toLowerCase();
+      contenedor.innerHTML = "";
+
+      for (let clave in localStorage) {
+        if (clave.startsWith("firma_")) {
+          const nombre = clave.replace("firma_", "");
+          if (nombre.toLowerCase().includes(filtro)) {
+            const img = localStorage.getItem(clave);
+            const div = document.createElement("div");
+            div.className = "firma";
+            div.innerHTML = \`<strong>\${nombre}</strong><br/><img src="\${img}" alt="Firma de \${nombre}" />\`;
+            contenedor.appendChild(div);
+          }
+        }
+      }
+
+      if (contenedor.innerHTML === "") {
+        contenedor.innerHTML = "<p>No hay firmas disponibles.</p>";
+      }
+    }
+
+    window.onload = mostrarFirmas;
+  </script>
+
+</body>
+</html>

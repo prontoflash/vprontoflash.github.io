@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Firma Digital - PRONTOFLASH</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    h2 {
+      color: #ff3300;
+    }
+    canvas {
+      background: white;
+      border: 2px solid #ff3300;
+      margin-top: 15px;
+    }
+    button {
+      background-color: #ff3300;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    input {
+      padding: 10px;
+      margin: 10px auto;
+      width: 250px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🖊 Firma del Cliente</h2>
+  <input type="text" id="nombreCliente" placeholder="Nombre del cliente" />
+  <canvas id="canvasFirma" width="300" height="150"></canvas><br/>
+  <button onclick="limpiar()">Limpiar</button>
+  <button onclick="guardar()">Guardar Firma</button>
+
+  <script>
+    const canvas = document.getElementById("canvasFirma");
+    const ctx = canvas.getContext("2d");
+    let firmando = false;
+
+    canvas.addEventListener("mousedown", () => firmando = true);
+    canvas.addEventListener("mouseup", () => {
+      firmando = false;
+      ctx.beginPath();
+    });
+    canvas.addEventListener("mousemove", dibujar);
+
+    function dibujar(e) {
+      if (!firmando) return;
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#000";
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    function limpiar() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function guardar() {
+      const nombre = document.getElementById("nombreCliente").value.trim();
+      if (!nombre) return alert("⚠️ Ingresa el nombre del cliente.");
+      const firma = canvas.toDataURL();
+      localStorage.setItem("firma_" + nombre, firma);
+      alert("✅ Firma guardada correctamente.");
+      limpiar();
+      document.getElementById("nombreCliente").value = "";
+    }
+  </script>
+
+</body>
+</html>

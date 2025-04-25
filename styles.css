@@ -1,0 +1,53 @@
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #111;
+  color: white;
+  text-align: center;
+}
+h1 span {
+  color: #ff3300;
+}
+.btn-login {
+  background-color: #ff3300;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+.botones {
+  margin-top: 30px;
+}
+.botones button {
+  padding: 12px 25px;
+  margin: 10px;
+  font-size: 16px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn1 {
+  background-color: #ff3300;
+  color: white;
+}
+.btn2 {
+  background-color: white;
+  color: #ff3300;
+  border: 2px solid #ff3300;
+}
+.btn3 {
+  background-color: #333;
+  color: white;
+}
+section {
+  padding: 50px 20px;
+  background-color: #1a1a1a;
+  margin-top: 20px;
+  border-radius: 10px;
+}

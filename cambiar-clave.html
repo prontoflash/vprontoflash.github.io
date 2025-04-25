@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cambiar Clave - PRONTOFLASH</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    h2 {
+      color: #ff3300;
+    }
+    input {
+      padding: 10px;
+      margin: 10px auto;
+      display: block;
+      width: 250px;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #ff3300;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #cc2900;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🔐 Cambiar Clave</h2>
+
+  <input type="text" id="usuario" placeholder="Nombre de usuario" />
+  <input type="password" id="nuevaClave" placeholder="Nueva contraseña" />
+  <button onclick="cambiarClave()">Guardar nueva clave</button>
+
+  <script>
+    function cambiarClave() {
+      const usuario = document.getElementById("usuario").value.trim();
+      const nuevaClave = document.getElementById("nuevaClave").value;
+
+      if (!usuario || !nuevaClave) {
+        alert("⚠️ Completa ambos campos.");
+        return;
+      }
+
+      localStorage.setItem("clave_" + usuario, nuevaClave);
+      alert("✅ Contraseña actualizada para " + usuario);
+      document.getElementById("usuario").value = "";
+      document.getElementById("nuevaClave").value = "";
+    }
+  </script>
+
+</body>
+</html>

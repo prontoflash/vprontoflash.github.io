@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Factura Individual - PRONTOFLASH</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    body {
+      background-color: white;
+      color: black;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      max-width: 700px;
+      margin: auto;
+    }
+    h2 {
+      color: #ff3300;
+      text-align: center;
+    }
+    .info {
+      margin-bottom: 20px;
+    }
+    .firma {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .firma img {
+      max-height: 100px;
+      margin-top: 10px;
+    }
+    .boton {
+      display: block;
+      margin: 30px auto;
+      padding: 10px 20px;
+      background-color: #ff3300;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    @media print {
+      .boton {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Factura de Servicio</h2>
+  <div class="info" id="detalleFactura"></div>
+  <div class="firma" id="firmaCliente"></div>
+  <button class="boton" onclick="window.print()">🖨️ Imprimir / Guardar como PDF</button>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = parseInt(params.get("id"));
+    const datos = JSON.parse(localStorage.getItem("agendamientos")) || [];
+    const servicio = datos[id];
+
+    if (servicio) {
+      document.getElementById("detalleFactura").innerHTML = \`
+        <strong>Cliente:</strong> \${servicio.cliente}<br/>
+        <strong>Servicio:</strong> \${servicio.servicio}<br/>
+        <strong>Fecha:</strong> \${servicio.fecha}<br/>
+        <strong>Hora:</strong> \${servicio.hora}<br/>
+        <strong>Duración:</strong> \${servicio.duracion || "-"} min<br/>
+        <strong>Precio:</strong> \$\${servicio.precio}<br/>
+        <strong>Estado Técnico:</strong> \${servicio.estadoTecnico}<br/>
+        <strong>Estado de Pago:</strong> \${servicio.estadoPago || "Pendiente"}<br/>
+      \`;
+
+      const firma = localStorage.getItem("firma_" + servicio.cliente);
+      if (firma) {
+        document.getElementById("firmaCliente").innerHTML = \`
+          <p><strong>Firma del Cliente:</strong></p>
+          <img src="\${firma}" alt="Firma" />
+        \`;
+      }
+    } else {
+      document.getElementById("detalleFactura").innerHTML = "⚠️ Factura no encontrada.";
+    }
+  </script>
+
+</body>
+</html>

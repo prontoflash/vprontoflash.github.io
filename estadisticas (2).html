@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Estadísticas - PRONTOFLASH</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    canvas {
+      max-width: 600px;
+      margin: 30px auto;
+    }
+    .metricas {
+      margin: 20px 0;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h2>📊 Estadísticas de Servicios</h2>
+
+  <div class="metricas" id="resumenEstadisticas"></div>
+
+  <canvas id="graficoServicios"></canvas>
+  <canvas id="graficoEstados"></canvas>
+
+  <script>
+    function obtenerAgendamientos() {
+      return JSON.parse(localStorage.getItem("agendamientos")) || [];
+    }
+
+    function generarEstadisticas() {
+      const data = obtenerAgendamientos().filter(a => a.estadoTecnico === "Finalizado");
+      const porTipo = {};
+      const porEstado = { Pagado: 0, Pendiente: 0 };
+      let ingresosTotales = 0;
+
+      data.forEach(item => {
+        if (item.servicio) porTipo[item.servicio] = (porTipo[item.servicio] || 0) + 1;
+        if (item.estadoPago) porEstado[item.estadoPago] = (porEstado[item.estadoPago] || 0) + 1;
+        ingresosTotales += parseFloat(item.precio || 0);
+      });
+
+      document.getElementById("resumenEstadisticas").innerHTML = \`
+        ✅ Total de servicios realizados: <strong>\${data.length}</strong><br/>
+        💰 Ingresos totales: <strong>$\${ingresosTotales.toFixed(2)}</strong>
+      \`;
+
+      const ctx1 = document.getElementById("graficoServicios").getContext("2d");
+      new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(porTipo),
+          datasets: [{
+            label: 'Servicios por tipo',
+            backgroundColor: '#ff3300',
+            data: Object.values(porTipo),
+          }]
+        }
+      });
+
+      const ctx2 = document.getElementById("graficoEstados").getContext("2d");
+      new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(porEstado),
+          datasets: [{
+            label: 'Estado de pago',
+            backgroundColor: ['#28a745', '#ffc107'],
+            data: Object.values(porEstado),
+          }]
+        }
+      });
+    }
+
+    window.onload = generarEstadisticas;
+  </script>
+</body>
+</html>

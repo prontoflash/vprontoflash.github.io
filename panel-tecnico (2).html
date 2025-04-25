@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel del Técnico - PRONTOFLASH</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    button {
+      background-color: #ff3300;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    input, textarea {
+      padding: 10px;
+      margin: 5px;
+      width: 80%;
+      max-width: 400px;
+    }
+    canvas {
+      border: 1px solid white;
+      margin-top: 10px;
+    }
+    .navegacion {
+      margin-top: 40px;
+    }
+    .navegacion a {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 20px;
+      background-color: #444;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+    }
+    .navegacion a:hover {
+      background-color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>👨‍🔧 Panel del Técnico</h2>
+  <p>Control del servicio actual</p>
+
+  <div>
+    <strong>⏱ Duración del servicio:</strong> <span id="cronometro">00:00</span><br/>
+    <button onclick="iniciar()">Iniciar</button>
+    <button onclick="detener()">Detener</button>
+  </div>
+
+  <div>
+    <h3>📸 Foto del vehículo</h3>
+    <input type="file" accept="image/*" onchange="mostrarImagen(event)" /><br/>
+    <img id="imagenPreview" style="max-width:300px; margin-top:10px;" />
+  </div>
+
+  <div>
+    <h3>📝 Observaciones</h3>
+    <textarea id="observaciones" rows="4" placeholder="Notas del servicio..."></textarea>
+  </div>
+
+  <div>
+    <h3>🖊 Firma del Cliente</h3>
+    <canvas id="firma" width="300" height="150"></canvas><br/>
+    <button onclick="limpiarFirma()">Limpiar</button>
+    <button onclick="guardarFirma()">Guardar Firma</button>
+  </div>
+
+  <div class="navegacion">
+    <a href="demo.html">🔙 Volver a Demo</a>
+    <a href="resumen-facturacion.html">🧾 Ver Facturación</a>
+  </div>
+
+  <script>
+    let timer, segundos = 0;
+
+    function iniciar() {
+      if (!timer) {
+        timer = setInterval(() => {
+          segundos++;
+          let min = String(Math.floor(segundos / 60)).padStart(2, '0');
+          let seg = String(segundos % 60).padStart(2, '0');
+          document.getElementById("cronometro").textContent = min + ":" + seg;
+        }, 1000);
+      }
+    }
+
+    function detener() {
+      clearInterval(timer);
+      timer = null;
+    }
+
+    function mostrarImagen(e) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        document.getElementById("imagenPreview").src = reader.result;
+      }
+      reader.readAsDataURL(e.target.files[0]);
+    }
+
+    const canvas = document.getElementById("firma");
+    const ctx = canvas.getContext("2d");
+    let firmando = false;
+
+    canvas.addEventListener("mousedown", () => firmando = true);
+    canvas.addEventListener("mouseup", () => firmando = false);
+    canvas.addEventListener("mousemove", dibujar);
+
+    function dibujar(e) {
+      if (!firmando) return;
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#fff";
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    function limpiarFirma() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function guardarFirma() {
+      const firma = canvas.toDataURL();
+      localStorage.setItem("firma_tecnico", firma);
+      alert("Firma guardada en el navegador.");
+    }
+  </script>
+
+</body>
+</html>

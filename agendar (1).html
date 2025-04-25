@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Agendar Servicio - PRONTOFLASH</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      text-align: center;
+    }
+    h2 {
+      color: #ff3300;
+    }
+    input, select {
+      padding: 10px;
+      margin: 10px;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      background-color: #ff3300;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #cc2900;
+    }
+    .navegacion {
+      margin-top: 40px;
+    }
+    .navegacion a {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 20px;
+      background-color: #444;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+    }
+    .navegacion a:hover {
+      background-color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🗓️ Agendar un Servicio</h2>
+  <form id="formAgendar">
+    <input type="text" id="cliente" placeholder="Tu nombre completo" required /><br/>
+    <select id="servicio" required>
+      <option value="">Selecciona un servicio</option>
+      <option value="Lavado Básico">Lavado Básico</option>
+      <option value="Lavado Completo">Lavado Completo</option>
+      <option value="Lavado Premium">Lavado Premium</option>
+    </select><br/>
+    <input type="date" id="fecha" required /><br/>
+    <input type="time" id="hora" required /><br/>
+    <button type="submit">📨 Agendar</button>
+  </form>
+
+  <div class="navegacion">
+    <a href="demo.html">🔙 Volver a Demo</a>
+    <a href="firma-digital.html">✍️ Ir a Firma Digital</a>
+  </div>
+
+  <script>
+    document.getElementById("formAgendar").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const cliente = document.getElementById("cliente").value;
+      const servicio = document.getElementById("servicio").value;
+      const fecha = document.getElementById("fecha").value;
+      const hora = document.getElementById("hora").value;
+
+      const nuevo = {
+        cliente, servicio, fecha, hora,
+        estadoTecnico: "Pendiente"
+      };
+
+      const agenda = JSON.parse(localStorage.getItem("agendamientos")) || [];
+      agenda.push(nuevo);
+      localStorage.setItem("agendamientos", JSON.stringify(agenda));
+
+      alert("✅ Servicio agendado correctamente.");
+      this.reset();
+    });
+  </script>
+
+</body>
+</html>
